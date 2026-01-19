@@ -558,6 +558,8 @@ room.setCustomStadium(mapa);
 room.setScoreLimit(0);
 room.setTimeLimit(0);
 
+/* [[!!]] FUNCIONES CUSTOM [[!!]] */
+
 // If there are no admins left in the room give admin to one of the remaining players.
 function updateAdmins() { 
   // Get all players
@@ -567,10 +569,26 @@ function updateAdmins() {
   room.setPlayerAdmin(players[0].id, true); // Give admin to the first non admin player in the list
 }
 
-function mensajeBienvenida(player){
+function mensajeBienvenida(player) {
     var nombre = player.name; 
     room.sendAnnouncement(`[🏐] BIENVENIDO ${nombre}!`, player.id, 0x020582, "bold", 2);
 }
+
+function ingresaComando(message,player) {
+    switch(message){
+        case "!bb":
+            room.kickPlayer(player.id,"🐒 Nos vemos villero!",false);
+            break;
+        case "!ayuda":
+            room.sendAnnouncement("[🕶] Comandos disponibles: !ayuda - !bb", player.id, 0x4d4dff, "bold", 2);
+            break;
+        default:
+            room.sendAnnouncement("[⛔] Ingresaste un comando incorrecto! Prueba con !ayuda", player.id, 0xcc0000, "bold", 2);
+            break;
+    }
+}
+
+/* [[!!]] EVENTOS [[!!]] */
 
 room.onPlayerJoin = function(player) {
     updateAdmins();
@@ -579,4 +597,11 @@ room.onPlayerJoin = function(player) {
 
 room.onPlayerLeave = function(player) {
   updateAdmins();
+}
+
+room.onPlayerChat = function(player, message) {
+    if(message.startsWith("!")){
+        ingresaComando(message,player);
+        return false;
+    }
 }
